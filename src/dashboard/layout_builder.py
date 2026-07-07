@@ -75,6 +75,9 @@ class LayoutBuilder:
         size.set('minwidth', str(self.DASHBOARD_WIDTH))
         size.set('sizing-mode', 'fixed')
 
+        # Add datasources element (empty - worksheets have their own datasources)
+        datasources = etree.SubElement(dashboard, 'datasources')
+
         # Create zones container
         zones = etree.SubElement(dashboard, 'zones')
 
@@ -87,6 +90,13 @@ class LayoutBuilder:
             table_worksheet,
             filters
         )
+
+        # Add devicelayouts (required for responsive design)
+        devicelayouts = etree.SubElement(dashboard, 'devicelayouts')
+
+        # Add simple-id (required)
+        simple_id = etree.SubElement(dashboard, 'simple-id')
+        simple_id.set('uuid', '{' + 'A' * 8 + '-' + 'B' * 4 + '-' + 'C' * 4 + '-' + 'D' * 4 + '-' + 'E' * 12 + '}')
 
         return dashboard
 
