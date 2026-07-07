@@ -244,7 +244,13 @@ class LayoutBuilder:
             kpi_zone.set('h', str(height))
             kpi_zone.set('x', str(x_pos))
             kpi_zone.set('y', '0')
-            kpi_zone.set('type-v2', 'layout-basic')
+
+            # Add layout cache (required for worksheet zones)
+            layout_cache = etree.SubElement(kpi_zone, 'layout-cache')
+            layout_cache.set('cell-count-h', '1')
+            layout_cache.set('cell-count-w', '1')
+            layout_cache.set('type-h', 'cell')
+            layout_cache.set('type-w', 'cell')
 
             # Add card styling
             zone_style = etree.SubElement(kpi_zone, 'zone-style')
@@ -266,7 +272,13 @@ class LayoutBuilder:
         chart_zone.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
         chart_zone.set('x', '0')
         chart_zone.set('y', '0')
-        chart_zone.set('type-v2', 'layout-basic')
+
+        # Add layout cache
+        layout_cache = etree.SubElement(chart_zone, 'layout-cache')
+        layout_cache.set('cell-count-h', '1')
+        layout_cache.set('cell-count-w', '1')
+        layout_cache.set('type-h', 'cell')
+        layout_cache.set('type-w', 'cell')
 
         # Add subtle card background
         zone_style = etree.SubElement(chart_zone, 'zone-style')
@@ -303,7 +315,13 @@ class LayoutBuilder:
             chart_zone.set('h', str(height))
             chart_zone.set('x', str(x_pos))
             chart_zone.set('y', '0')
-            chart_zone.set('type-v2', 'layout-basic')
+
+            # Add layout cache
+            layout_cache = etree.SubElement(chart_zone, 'layout-cache')
+            layout_cache.set('cell-count-h', '1')
+            layout_cache.set('cell-count-w', '1')
+            layout_cache.set('type-h', 'cell')
+            layout_cache.set('type-w', 'cell')
 
             zone_style = etree.SubElement(chart_zone, 'zone-style')
             self._add_format(zone_style, 'background-color', '#FFFFFF')
@@ -324,7 +342,13 @@ class LayoutBuilder:
         table_zone.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
         table_zone.set('x', '0')
         table_zone.set('y', '0')
-        table_zone.set('type-v2', 'layout-basic')
+
+        # Add layout cache
+        layout_cache = etree.SubElement(table_zone, 'layout-cache')
+        layout_cache.set('cell-count-h', '1')
+        layout_cache.set('cell-count-w', '1')
+        layout_cache.set('type-h', 'cell')
+        layout_cache.set('type-w', 'cell')
 
         zone_style = etree.SubElement(table_zone, 'zone-style')
         self._add_format(zone_style, 'background-color', '#FFFFFF')
