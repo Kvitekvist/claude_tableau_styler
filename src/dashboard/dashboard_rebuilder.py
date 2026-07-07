@@ -76,6 +76,9 @@ class DashboardRebuilder:
             filters=None  # Add later if needed
         )
 
+        # IMPORTANT: Keep the original name "Hjem.no" instead of the title
+        new_dashboard_elem.set('name', 'Hjem.no')
+
         # Find dashboards element in XML
         dashboards_elem = rebuilt.xml_root.find('dashboards')
         if dashboards_elem is not None:
