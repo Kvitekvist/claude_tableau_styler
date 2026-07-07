@@ -115,7 +115,6 @@ class ColorTransformer:
             return
 
         gridline_color = template.chart_elements.gridlines.color
-        gridline_opacity = template.chart_elements.gridlines.opacity
 
         # Find all worksheets
         for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
@@ -135,9 +134,8 @@ class ColorTransformer:
                 grid_rule = etree.SubElement(style, 'style-rule')
                 grid_rule.set('element', 'gridline')
 
-            # Set gridline color
+            # Set gridline color only (opacity not supported by Tableau)
             self._set_format_value(grid_rule, 'stroke-color', gridline_color)
-            self._set_format_value(grid_rule, 'stroke-opacity', str(gridline_opacity))
 
     def _apply_axis_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
         """Apply axis colors from template"""
