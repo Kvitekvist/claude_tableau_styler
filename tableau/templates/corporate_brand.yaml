@@ -1,0 +1,293 @@
+# Corporate Brand Style Template
+# Tableau Dashboard Styler - Brand-Aligned Styling Configuration
+#
+# This template applies your corporate brand colors and professional styling
+# to Tableau dashboards for consistent, polished analytics deliverables.
+
+metadata:
+  name: "Corporate Brand"
+  description: "Primary corporate brand styling with burgundy and green accents"
+  version: "1.0"
+  author: "Tableau Styler"
+  created: "2026-07-07"
+  use_case: "Executive reports, client-facing dashboards, presentations"
+
+# =============================================================================
+# COLOR PALETTES
+# =============================================================================
+
+colors:
+  # Brand Identity Colors
+  brand:
+    primary_burgundy: "#7E2D25"      # Hero elements, key highlights, primary CTAs
+    dark_burgundy: "#602020"         # Darker accents, hover states, emphasis
+    accent_green: "#34A83A"          # Positive metrics, success indicators, highlights
+    light_blue: "#B7DDF7"            # Soft backgrounds, secondary sections
+    medium_blue: "#9EC9E9"           # Illustrations, decorative elements
+
+  # Neutrals & Typography
+  neutrals:
+    white: "#FFFFFF"                 # Main backgrounds, cards
+    near_black: "#222222"            # Primary text, headings
+    light_gray: "#F2F2F2"            # Subtle backgrounds, alternating rows
+    medium_gray: "#D9D9D9"           # Borders, dividers, disabled states
+    dark_gray: "#6B6B6B"             # Secondary text, labels
+
+  # Categorical Palette (for dimensions: regions, categories, products)
+  # Use this for bar charts, pie charts, maps with discrete categories
+  categorical:
+    - "#7E2D25"  # Primary Burgundy
+    - "#34A83A"  # Green
+    - "#9EC9E9"  # Medium Blue
+    - "#602020"  # Dark Burgundy
+    - "#B7DDF7"  # Light Blue
+    - "#6B6B6B"  # Dark Gray
+    - "#D9D9D9"  # Medium Gray
+    - "#F2F2F2"  # Light Gray
+
+  # Sequential Palette (for continuous measures: sales, revenue, quantities)
+  # Light to dark progression for heat maps, filled maps, gradient charts
+  sequential:
+    light_to_dark:
+      - "#F2F2F2"  # Lightest
+      - "#B7DDF7"
+      - "#9EC9E9"
+      - "#7E2D25"
+      - "#602020"  # Darkest
+
+  # Diverging Palette (for variance: over/under target, positive/negative)
+  # Use for profit/loss, variance analysis, comparison charts
+  diverging:
+    negative_to_positive:
+      - "#602020"  # Strong negative (Dark Burgundy)
+      - "#7E2D25"  # Negative (Burgundy)
+      - "#F2F2F2"  # Neutral (Light Gray)
+      - "#34A83A"  # Positive (Green)
+      - "#228B2E"  # Strong positive (Darker Green)
+
+  # Semantic Colors (for KPIs, alerts, status indicators)
+  semantic:
+    success: "#34A83A"       # Targets met, positive trends, on-track
+    warning: "#FF9800"       # Approaching thresholds, caution
+    danger: "#7E2D25"        # Below target, negative trends, critical
+    info: "#9EC9E9"          # Informational, neutral
+    muted: "#6B6B6B"         # De-emphasized data, benchmarks
+
+# =============================================================================
+# TYPOGRAPHY
+# =============================================================================
+
+typography:
+  # Dashboard Title
+  title:
+    font_family: "Arial"
+    font_size: 20
+    font_weight: "bold"
+    color: "#7E2D25"         # Primary Burgundy
+    alignment: "left"
+
+  # Sheet/Worksheet Titles
+  sheet_title:
+    font_family: "Arial"
+    font_size: 14
+    font_weight: "bold"
+    color: "#222222"         # Near Black
+    alignment: "left"
+
+  # Body Text (labels, tooltips, annotations)
+  body:
+    font_family: "Arial"
+    font_size: 11
+    font_weight: "normal"
+    color: "#222222"         # Near Black
+    alignment: "left"
+
+  # Axis Labels
+  axis_labels:
+    font_family: "Arial"
+    font_size: 10
+    font_weight: "normal"
+    color: "#6B6B6B"         # Dark Gray
+
+  # Data Labels (on charts)
+  data_labels:
+    font_family: "Arial"
+    font_size: 10
+    font_weight: "normal"
+    color: "#222222"         # Near Black
+    show: true               # Display data labels by default
+
+  # Tooltips
+  tooltip:
+    font_family: "Arial"
+    font_size: 11
+    font_weight: "normal"
+    background_color: "#FFFFFF"
+    border_color: "#D9D9D9"
+    text_color: "#222222"
+
+# =============================================================================
+# DASHBOARD LAYOUT
+# =============================================================================
+
+layout:
+  # Dashboard Background
+  dashboard:
+    background_color: "#FFFFFF"      # White
+    padding: 12                      # Pixels around dashboard edge
+
+  # Container Styling
+  containers:
+    background_color: "#F2F2F2"      # Light Gray for containers
+    border_color: "#D9D9D9"          # Medium Gray borders
+    border_width: 1
+    padding: 8                       # Internal padding
+    spacing: 8                       # Space between containers
+
+  # Worksheet/Sheet Styling
+  sheets:
+    background_color: "#FFFFFF"      # White
+    border_color: "#D9D9D9"          # Medium Gray borders
+    border_width: 1
+    padding: 8
+    title_background: "#F2F2F2"      # Light Gray title background
+
+# =============================================================================
+# CHART ELEMENTS
+# =============================================================================
+
+chart_elements:
+  # Grid Lines
+  gridlines:
+    show: true
+    color: "#D9D9D9"                 # Medium Gray
+    style: "solid"                   # solid, dashed, dotted
+    opacity: 0.3                     # 0.0 to 1.0
+
+  # Axis Lines
+  axes:
+    line_color: "#6B6B6B"            # Dark Gray
+    line_width: 1
+    show_zero_line: true
+    zero_line_color: "#222222"       # Near Black for emphasis
+
+  # Reference Lines
+  reference_lines:
+    color: "#7E2D25"                 # Primary Burgundy
+    style: "dashed"
+    width: 2
+    label_color: "#7E2D25"
+
+  # Borders
+  borders:
+    show: true
+    color: "#D9D9D9"                 # Medium Gray
+    width: 1
+
+  # Shadows
+  shadows:
+    enabled: false                   # Keep clean, minimal look
+
+  # Null/Missing Data
+  null_values:
+    color: "#D9D9D9"                 # Medium Gray
+    pattern: "diagonal-stripe"       # Visual distinction for missing data
+
+# =============================================================================
+# SPECIFIC CHART TYPES
+# =============================================================================
+
+chart_types:
+  # Bar Charts
+  bar_chart:
+    default_color: "#7E2D25"         # Primary Burgundy
+    border_color: "#602020"          # Dark Burgundy outline
+    use_categorical_palette: true    # Use full palette for multiple series
+
+  # Line Charts
+  line_chart:
+    line_width: 2
+    marker_size: 6
+    default_color: "#7E2D25"         # Primary Burgundy
+    use_categorical_palette: true
+
+  # Pie/Donut Charts
+  pie_chart:
+    use_categorical_palette: true
+    border_color: "#FFFFFF"          # White borders between slices
+    border_width: 2
+
+  # Maps
+  map:
+    base_color: "#F2F2F2"            # Light Gray for no data
+    use_sequential_palette: true     # For filled maps
+    border_color: "#D9D9D9"          # Region borders
+
+  # Heat Maps
+  heatmap:
+    use_sequential_palette: true
+    show_labels: true
+    label_color: "#FFFFFF"           # White text on dark cells
+
+  # KPI Cards / BANs (Big Ass Numbers)
+  kpi_card:
+    background_color: "#FFFFFF"
+    border_color: "#D9D9D9"
+    number_color: "#7E2D25"          # Primary Burgundy
+    label_color: "#6B6B6B"           # Dark Gray
+    trend_up_color: "#34A83A"        # Green
+    trend_down_color: "#7E2D25"      # Burgundy
+
+# =============================================================================
+# FILTERS & PARAMETERS
+# =============================================================================
+
+filters:
+  background_color: "#F2F2F2"        # Light Gray
+  border_color: "#D9D9D9"            # Medium Gray
+  text_color: "#222222"              # Near Black
+  highlight_color: "#7E2D25"         # Primary Burgundy when selected
+  dropdown_background: "#FFFFFF"
+
+# =============================================================================
+# SPECIAL RULES
+# =============================================================================
+
+rules:
+  # Automatically apply brand colors to:
+  apply_to:
+    - "titles"                       # All dashboard and sheet titles
+    - "highlights"                   # Highlighted marks/selections
+    - "tooltips"                     # Tooltip styling
+    - "filters"                      # Filter controls
+    - "reference_lines"              # Reference and trend lines
+
+  # Preserve original if:
+  preserve_original:
+    - "custom_calculations"          # Don't override calculated field colors
+    - "explicit_color_legends"       # Keep manually-assigned color legends
+
+  # Quality settings:
+  quality:
+    anti_aliasing: true              # Smooth text and lines
+    font_smoothing: true             # Better text rendering
+    high_quality_export: true        # Optimize for print/PDF
+
+# =============================================================================
+# NOTES
+# =============================================================================
+
+notes: |
+  This template provides comprehensive brand-aligned styling for Tableau dashboards.
+
+  Best Practices:
+  - Use categorical palette for dimensions (regions, products, categories)
+  - Use sequential palette for continuous measures (sales, revenue)
+  - Use diverging palette for variance/comparison (actual vs target)
+  - Use semantic colors for KPIs and status indicators
+
+  Color Psychology:
+  - Burgundy: Authority, sophistication, importance
+  - Green: Growth, success, positive trends
+  - Blues: Trust, calm, professional
+  - Grays: Neutral, supporting information
