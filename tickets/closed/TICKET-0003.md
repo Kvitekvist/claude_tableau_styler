@@ -1,90 +1,115 @@
 # TICKET-0003
 
-**Status**
-
-Closed
-
-**Type**
-
+## Type
 Feature
 
-**Priority**
+## Status
+Open
 
-High
+## Created
+2026-07-07
 
-**Created**
-
-2026-07-06
-
-**Parent Ticket**
-
-None
-
-**Child Tickets**
-
-None
-
-**Dependencies**
-
-None
-
----
+## Title
+Build Tableau File Parser (.twb/.twbx)
 
 ## Description
+Create a robust parser that can read both .twb (uncompressed XML) and .twbx (compressed zip containing XML) Tableau workbook files. Extract the XML structure, parse dashboard elements, worksheets, and formatting properties into a usable Python object model.
 
-Create a distribution system that allows company users to create new projects from this template with a single command.
+## Parent Ticket
+TICKET-0002
 
----
-
-## Reason
-
-The template should be easy to use across the company. Users should be able to scaffold new projects without manually copying files or knowing git commands.
-
----
+## Dependencies
+None (first child ticket)
 
 ## Implementation Plan
 
-* [x] Evaluate distribution options (GitHub Template, CLI script, copier tool)
-* [x] Create scripts/init_project.bat initialization script
-* [x] Add questionnaire for project details
-* [x] Implement file customization logic
-* [x] Add GitHub repo setup option
-* [x] Create distribution documentation
-* [x] Update README with setup instructions
-* [x] Test end-to-end workflow (ready for user testing)
+### 1. Create Parser Module Structure
+* Create `src/parser/tableau_parser.py`
+* Create `src/parser/workbook.py` (data models)
+* Create `tests/parser/test_tableau_parser.py`
 
----
+### 2. Implement .twbx Handler
+* Detect .twbx file format
+* Extract zip contents to temporary location
+* Locate the .twb XML file inside
+* Clean up temporary files after parsing
 
-## Files Modified
+### 3. Implement .twb XML Parser
+* Parse XML using lxml
+* Extract workbook structure (dashboards, worksheets)
+* Identify formatting elements:
+  - Color definitions
+  - Font specifications
+  - Layout properties
+  - Chart configurations
+* Build internal object model
 
-* `scripts/init_project.bat` (new) - Interactive initialization script
-* `README.md` - Added Quick Start and GitHub Template instructions
-* `docs/DISTRIBUTION.md` (new) - Complete distribution and setup guide
+### 4. Create Data Models
+* `Workbook` class - represents entire workbook
+* `Dashboard` class - individual dashboard
+* `Worksheet` class - individual worksheet
+* `Format` class - styling properties
 
----
+### 5. Add Validation
+* Verify file format (is it a valid Tableau file?)
+* Check XML structure
+* Handle corrupted or incomplete files gracefully
+* Provide meaningful error messages
 
-## Testing
+### 6. Testing
+* Test with provided .twbx file
+* Test with sample .twb file
+* Test error cases (invalid files, corrupted zip, missing XML)
+* Verify parsed structure matches expected format
 
-* User runs single command
-* New project is created with template structure
-* Initialization prompts for project details
-* Git is configured correctly
-* All placeholder values are replaced
+## Technical Details
 
----
+**File Format Notes:**
+- `.twb` = Uncompressed XML file
+- `.twbx` = ZIP archive containing .twb + data extracts
+- XML namespace: `http://tableau.com/api` (or similar)
+- Root element: `<workbook>`
 
-## Result
+**Key XML Elements to Parse:**
+- `<workbook>` - root
+- `<dashboards>` - dashboard definitions
+- `<worksheets>` - worksheet definitions
+- `<datasources>` - data connections (preserve these)
+- `<preferences>` - formatting and style properties
+- `<style>` - color palettes, fonts
 
-Company users can create new projects from template with one command.
+## Testing Strategy
 
----
+```python
+def test_parse_twbx():
+    parser = TableauParser()
+    workbook = parser.parse("tableau/input/RE - NO - Kraken - Competitor Analysis Hjem.twbx")
+    
+    assert workbook is not None
+    assert len(workbook.dashboards) > 0
+    assert workbook.file_type == "twbx"
+
+def test_parse_invalid_file():
+    parser = TableauParser()
+    with pytest.raises(InvalidTableauFileError):
+        parser.parse("invalid.txt")
+```
+
+## Success Criteria
+
+✅ Can read .twbx files (extract XML from zip)
+✅ Can read .twb files (parse XML directly)
+✅ Extracts dashboard and worksheet structures
+✅ Identifies current formatting/styling properties
+✅ Handles errors gracefully with clear messages
+✅ Unit tests pass with provided file
+✅ Returns usable Python object model
 
 ## Notes
 
-Need to choose between: GitHub Template repository, batch script, or Python-based tool like copier.
+Focus on **reading only** in this ticket. Writing/modification happens in later tickets.
 
----
+Do NOT modify the original file - this is read-only parsing.
 
-## Closed
-
-2026-07-06
+## Estimated Complexity
+Medium - XML parsing with zip handling

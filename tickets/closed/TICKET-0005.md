@@ -1,7 +1,7 @@
-# TICKET-0005
+# TICKET-0002
 
 ## Type
-Feature (Parent)
+Feature
 
 ## Status
 Open
@@ -10,92 +10,148 @@ Open
 2026-07-07
 
 ## Title
-Complete Tableau Dashboard Styling System
+Build Core Styling Engine
 
 ## Description
-Build the complete end-to-end system to apply the corporate brand template to Tableau workbook files. This involves parsing .twb/.twbx files, loading YAML style templates, applying styling transformations to dashboard XML, and safely writing styled outputs with backups.
+Create the styling engine that takes a parsed Tableau workbook (from TICKET-0003) and a style template (from TICKET-0004), then applies the styling transformations to the workbook's XML structure. This includes modifying colors, fonts, layouts, and chart properties while preserving data connections and calculations.
 
-**User Request**: "Use this [corporate_brand.yaml] to style up my tableau report to make it look professional and sharp"
-
-**Input File**: `tableau/input/RE - NO - Kraken - Competitor Analysis Hjem.twbx`
-
-**Template**: `tableau/templates/corporate_brand.yaml`
-
-**Expected Output**: `tableau/output/RE - NO - Kraken - Competitor Analysis Hjem_styled.twbx`
-
-## Child Tickets
-
-This is broken into 5 sequential child tickets:
-
-- TICKET-0006: Tableau file parser (.twb/.twbx reader)
-- TICKET-0007: YAML template configuration loader
-- TICKET-0008: Core styling engine (color/font/layout transformer)
-- TICKET-0009: File manager (backup, read, write operations)
-- TICKET-0010: Main application orchestrator
+## Parent Ticket
+TICKET-0002
 
 ## Dependencies
-
-None (parent ticket)
+- TICKET-0003 (requires parsed workbook object)
+- TICKET-0004 (requires style configuration object)
 
 ## Implementation Plan
 
-### Phase 1: Foundation (TICKET-0006, TICKET-0007)
-* [x] Parse .twbx (extract XML from zip)
-* [x] Parse .twb (XML structure analysis)
-* [x] Load and validate YAML template
-* [x] Build internal configuration model
+### 1. Create Styling Module Structure
+* Create `src/styling/engine.py`
+* Create `src/styling/color_transformer.py`
+* Create `src/styling/typography_transformer.py`
+* Create `src/styling/layout_transformer.py`
+* Create `tests/styling/test_engine.py`
 
-### Phase 2: Core Engine (TICKET-0008)
-* [ ] Apply color palettes (categorical, sequential, diverging)
-* [ ] Transform typography (fonts, sizes, colors)
-* [ ] Modify layout properties (padding, spacing, backgrounds)
-* [ ] Update chart elements (gridlines, axes, borders)
-* [ ] Handle specific chart types (bar, line, pie, maps)
+### 2. Implement Color Transformation
+* Apply categorical palette to dimension-based charts
+* Apply sequential palette to continuous measures
+* Apply diverging palette to variance/comparison charts
+* Update background colors (dashboard, sheets, containers)
+* Update border colors
+* Update text colors
+* Preserve explicit color legends when specified
 
-### Phase 3: Integration (TICKET-0009, TICKET-0010)
-* [ ] Implement safe backup mechanism
-* [ ] Write modified XML back to .twb/.twbx
-* [ ] Build main application flow
-* [ ] Add error handling and validation
-* [ ] Test with actual dashboard file
+### 3. Implement Typography Transformation
+* Update dashboard title fonts (family, size, weight, color)
+* Update sheet title fonts
+* Update body text/labels
+* Update axis label fonts
+* Update data label fonts
+* Update tooltip fonts
+
+### 4. Implement Layout Transformation
+* Update dashboard padding/margins
+* Update container backgrounds and spacing
+* Update sheet backgrounds and borders
+* Update title backgrounds
+
+### 5. Implement Chart Element Transformation
+* Update gridline color, style, opacity
+* Update axis line colors and widths
+* Update reference line styling
+* Update border styles
+* Configure null value handling
+
+### 6. Implement Chart Type Specific Styling
+* Bar charts (colors, borders, palettes)
+* Line charts (line width, markers, colors)
+* Pie charts (slice colors, borders)
+* Maps (base colors, sequential palettes, borders)
+* Heat maps (sequential palette, label colors)
+* KPI cards (background, number color, trend colors)
+
+### 7. Add Safety Mechanisms
+* **Preserve data connections** - don't modify datasource XML
+* **Preserve calculated fields** - don't modify calculations
+* **Preserve interactivity** - maintain filters, actions, parameters
+* Validate XML structure after modifications
+* Create deep copy of workbook before modifying
+
+### 8. Testing
+* Test color transformation on sample workbook
+* Test typography changes
+* Test layout modifications
+* Test preservation of data connections
+* Verify styled XML is valid Tableau format
+* Integration test with full template
+
+## Technical Details
+
+**XML Modification Strategy:**
+```python
+# Example: Update dashboard background color
+def apply_dashboard_background(dashboard_xml, color):
+    # Find <dashboard> element
+    # Locate or create <format> child
+    # Update background-color property
+    # Preserve all other properties
+```
+
+**Preservation Rules:**
+- Never modify `<datasources>` section
+- Never modify `<column>` calculation formulas
+- Never modify `<filter>` or `<parameter>` definitions
+- Never modify `<action>` interactivity
+
+**Styling Priority:**
+1. Explicit user-defined colors (preserve if template says so)
+2. Template-specified colors
+3. Tableau defaults (fallback)
 
 ## Testing Strategy
 
-1. **Unit Tests**: Each component tested independently
-2. **Integration Tests**: End-to-end workflow with sample file
-3. **Visual Validation**: Compare before/after dashboard screenshots
-4. **Safety Tests**: Verify backups created, original preserved
+```python
+def test_apply_brand_colors():
+    workbook = parse_workbook("sample.twb")
+    template = load_template("corporate_brand.yaml")
+    engine = StylingEngine()
+    
+    styled_workbook = engine.apply_template(workbook, template)
+    
+    # Verify dashboard background is white
+    assert styled_workbook.dashboards[0].background_color == "#FFFFFF"
+    
+    # Verify title color is burgundy
+    assert styled_workbook.dashboards[0].title.color == "#7E2D25"
+    
+    # Verify data connections preserved
+    assert len(styled_workbook.datasources) == len(workbook.datasources)
+
+def test_preserve_calculations():
+    # Ensure calculated fields remain unchanged
+    assert styled_workbook.get_calculation("Profit Ratio") == workbook.get_calculation("Profit Ratio")
+```
 
 ## Success Criteria
 
-✅ Successfully parse the provided .twbx file
-✅ Load corporate_brand.yaml template
-✅ Apply burgundy/green brand colors to charts
-✅ Update fonts to Arial with specified sizes
-✅ Modify backgrounds, borders, and spacing
-✅ Create automatic backup before modification
-✅ Output styled .twbx file that opens in Tableau
-✅ Dashboard looks professional and brand-aligned
+✅ Applies color palettes correctly (categorical, sequential, diverging)
+✅ Updates typography across all text elements
+✅ Modifies layout properties (padding, spacing, backgrounds)
+✅ Updates chart elements (grids, axes, borders)
+✅ Handles chart-type-specific styling
+✅ **Preserves data connections** (critical!)
+✅ **Preserves calculated fields** (critical!)
+✅ **Preserves interactivity** (filters, actions)
+✅ Validates modified XML is structurally valid
+✅ Unit tests pass for all transformations
+✅ Integration test with corporate_brand.yaml succeeds
 
 ## Notes
 
-This is a comprehensive feature requiring careful XML manipulation. Each child ticket builds on the previous one, ensuring we can test at each stage before moving forward.
+This is the **most complex** component - careful XML manipulation required.
 
-The styling engine must preserve:
-- Data connections
-- Calculated fields
-- Dashboard interactivity
-- Filter functionality
+**Safety First**: If uncertain about modifying an XML element, preserve it unchanged. Better to under-style than break the dashboard.
 
-## Parent Ticket
-None
+Test incremental changes - start with simple color updates, verify they work, then add more complex transformations.
 
-## Child Tickets
-- TICKET-0006
-- TICKET-0007
-- TICKET-0008
-- TICKET-0009
-- TICKET-0010
-
-## Dependencies
-None
+## Estimated Complexity
+High - Complex XML transformations with preservation logic

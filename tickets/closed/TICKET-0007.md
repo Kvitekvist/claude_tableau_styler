@@ -1,4 +1,4 @@
-# TICKET-0007
+# TICKET-0004
 
 ## Type
 Feature
@@ -10,110 +10,204 @@ Open
 2026-07-07
 
 ## Title
-Build YAML Template Configuration Loader
+Build Main Application Orchestrator
 
 ## Description
-Create a configuration loader that reads YAML style template files (like corporate_brand.yaml), validates the structure, and converts them into Python objects that the styling engine can use. Handle missing fields, provide defaults, and validate color codes and typography settings.
+Create the main application entry point that orchestrates the complete styling workflow: detect input files, load template, parse workbook, apply styling, create backup, write output. This is the user-facing command-line application that ties all components together.
 
 ## Parent Ticket
-TICKET-0005
+TICKET-0002
 
 ## Dependencies
-None (can run parallel with TICKET-0006)
+- TICKET-0003 (parser)
+- TICKET-0004 (config loader)
+- TICKET-0005 (styling engine)
+- TICKET-0006 (file manager)
 
 ## Implementation Plan
 
-### 1. Create Config Module Structure
-* Create `src/config/template_loader.py`
-* Create `src/config/style_config.py` (data models)
-* Create `tests/config/test_template_loader.py`
+### 1. Create Main Application
+* Create `src/main.py`
+* Create `src/cli.py` (command-line interface)
+* Create `tests/test_main.py`
 
-### 2. Implement YAML Parser
-* Load YAML file with PyYAML
-* Validate required sections exist
-* Provide sensible defaults for optional fields
-* Raise clear errors for malformed templates
+### 2. Implement File Detection
+* Scan `tableau/input/` for .twb and .twbx files
+* Display available files to user
+* Allow selection of file to style (or process all)
 
-### 3. Create Configuration Data Models
-* `StyleTemplate` - root configuration object
-* `ColorPalette` - categorical, sequential, diverging palettes
-* `Typography` - font settings for various elements
-* `LayoutConfig` - spacing, padding, backgrounds
-* `ChartElementConfig` - gridlines, axes, borders
-* `ChartTypeConfig` - specific settings per chart type
+### 3. Implement Template Selection
+* Scan `tableau/templates/` for .yaml files
+* Display available templates with metadata
+* Allow selection of template
+* Default to `corporate_brand.yaml`
 
-### 4. Add Validation
-* Validate hex color codes (#RRGGBB format)
-* Validate font sizes (reasonable range 6-72pt)
-* Validate opacity values (0.0 to 1.0)
-* Validate required fields are present
-* Provide helpful error messages for invalid values
+### 4. Implement Main Workflow
+```
+1. Detect input files
+2. Select template (or use default)
+3. For each file:
+   a. Parse workbook
+   b. Load template configuration
+   c. Apply styling transformations
+   d. Create backup
+   e. Write styled output
+   f. Report results
+4. Display summary (success/failures)
+```
 
-### 5. Implement Template Discovery
-* Scan `tableau/templates/` directory
-* List all available .yaml templates
-* Provide template metadata (name, description, use case)
+### 5. Add Progress Reporting
+* Show current step (Parsing... Styling... Writing...)
+* Display progress for multiple files
+* Show success/error messages
+* Provide clear output paths
 
-### 6. Testing
-* Test loading corporate_brand.yaml
-* Test invalid YAML (syntax errors)
-* Test missing required fields
-* Test invalid color codes
-* Test template discovery
+### 6. Implement Error Handling
+* Graceful handling of parse errors
+* Handle invalid templates
+* Handle file write failures
+* Provide actionable error messages
+* Don't crash on single file failure (continue with next)
+
+### 7. Add Command-Line Interface
+```bash
+# Basic usage (process all files with default template)
+python src/main.py
+
+# Specify file and template
+python src/main.py --file "dashboard.twbx" --template "corporate_brand.yaml"
+
+# Process all files with specific template
+python src/main.py --template "dark_mode.yaml"
+
+# Verbose output
+python src/main.py --verbose
+```
+
+### 8. Testing
+* Test single file processing
+* Test batch processing (multiple files)
+* Test with different templates
+* Test error scenarios (missing files, invalid template)
+* Integration test: full workflow with real file
+* Verify backups created correctly
+* Verify output files valid
 
 ## Technical Details
 
-**YAML Structure Validation:**
+**Main Workflow:**
 ```python
-required_sections = [
-    'metadata',
-    'colors',
-    'typography',
-    'layout',
-    'chart_elements'
-]
+def style_dashboard(input_file: str, template_file: str) -> str:
+    print(f"Processing: {input_file}")
+    
+    # Parse
+    print("  → Parsing workbook...")
+    parser = TableauParser()
+    workbook = parser.parse(input_file)
+    
+    # Load template
+    print("  → Loading template...")
+    loader = TemplateLoader()
+    template = loader.load(template_file)
+    
+    # Apply styling
+    print("  → Applying styling...")
+    engine = StylingEngine()
+    styled_workbook = engine.apply_template(workbook, template)
+    
+    # Save
+    print("  → Creating backup...")
+    manager = FileManager()
+    manager.create_backup(input_file)
+    
+    print("  → Writing styled output...")
+    output_path = manager.write(styled_workbook, input_file, "tableau/output")
+    
+    print(f"  ✓ Complete: {output_path}")
+    return output_path
 ```
 
-**Color Validation:**
+**CLI Arguments:**
 ```python
-def validate_hex_color(color: str) -> bool:
-    pattern = r'^#[0-9A-Fa-f]{6}$'
-    return re.match(pattern, color) is not None
+parser = argparse.ArgumentParser(
+    description="Tableau Dashboard Styler - Apply professional styling to dashboards"
+)
+parser.add_argument("--file", help="Specific .twb/.twbx file to style")
+parser.add_argument("--template", default="corporate_brand.yaml", help="Style template")
+parser.add_argument("--verbose", action="store_true", help="Verbose output")
+parser.add_argument("--batch", action="store_true", help="Process all files in input/")
 ```
 
 ## Testing Strategy
 
 ```python
-def test_load_corporate_template():
-    loader = TemplateLoader()
-    template = loader.load("tableau/templates/corporate_brand.yaml")
+def test_main_workflow():
+    # Integration test
+    result = style_dashboard(
+        "tableau/input/sample.twbx",
+        "tableau/templates/corporate_brand.yaml"
+    )
     
-    assert template.metadata.name == "Corporate Brand"
-    assert len(template.colors.categorical) == 8
-    assert template.colors.brand.primary_burgundy == "#7E2D25"
-    assert template.typography.title.font_size == 20
+    assert os.path.exists(result)
+    assert "_styled" in result
+    
+    # Verify backup created
+    backups = os.listdir("tableau/backups")
+    assert any("sample_backup_" in b for b in backups)
 
-def test_invalid_color_code():
-    loader = TemplateLoader()
-    with pytest.raises(InvalidColorCodeError):
-        loader.load("invalid_template.yaml")  # contains "#ZZZ"
+def test_batch_processing():
+    # Place multiple files in input/
+    results = main(["--batch", "--template", "corporate_brand.yaml"])
+    
+    assert len(results) > 0
+    assert all(os.path.exists(r) for r in results)
+
+def test_error_handling():
+    # Test with invalid file
+    with pytest.raises(InvalidTableauFileError):
+        style_dashboard("invalid.txt", "corporate_brand.yaml")
 ```
 
 ## Success Criteria
 
-✅ Loads corporate_brand.yaml successfully
-✅ Validates all color codes are valid hex
-✅ Validates font sizes are reasonable
-✅ Provides clear error messages for invalid templates
-✅ Returns usable Python configuration objects
-✅ Can list all available templates in directory
-✅ Unit tests pass for valid and invalid inputs
+✅ Detects all files in `tableau/input/`
+✅ Lists available templates
+✅ Successfully processes the provided .twbx file
+✅ Applies corporate_brand.yaml template
+✅ Creates backup in `tableau/backups/`
+✅ Writes styled output to `tableau/output/`
+✅ Provides clear progress messages
+✅ Handles errors gracefully with helpful messages
+✅ Command-line interface works as expected
+✅ Integration test passes with real file
+✅ Output file opens in Tableau Desktop successfully
+✅ Dashboard looks professional and brand-aligned
+
+## User Acceptance Test
+
+**Manual Verification:**
+1. Run `python src/main.py`
+2. Observe styled output file created
+3. Open `tableau/output/RE - NO - Kraken - Competitor Analysis Hjem_styled.twbx` in Tableau Desktop
+4. Verify:
+   - Colors match corporate brand (burgundy, green)
+   - Fonts are Arial with correct sizes
+   - Backgrounds are white/light gray
+   - Charts look professional and polished
+   - Dashboard still functions (filters work, data displays correctly)
+5. Compare with original (from backup) to see improvements
 
 ## Notes
 
-This module should be **pure configuration loading** - no file system modifications, no styling logic. Just read and validate YAML → Python objects.
+This is the **final integration** - all components come together here.
 
-Provide helpful defaults so templates don't need to specify every single field.
+Focus on **user experience**:
+- Clear messages
+- Helpful errors
+- Progress indication
+- Professional output
+
+If anything fails, provide enough information for the user to fix it (e.g., "Template 'missing.yaml' not found in tableau/templates/")
 
 ## Estimated Complexity
-Low-Medium - YAML parsing with validation
+Medium - Integration and orchestration with good UX

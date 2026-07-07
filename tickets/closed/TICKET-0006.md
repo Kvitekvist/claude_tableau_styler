@@ -1,4 +1,4 @@
-# TICKET-0006
+# TICKET-0003
 
 ## Type
 Feature
@@ -10,106 +10,161 @@ Open
 2026-07-07
 
 ## Title
-Build Tableau File Parser (.twb/.twbx)
+Build File Manager (Backup, Read, Write)
 
 ## Description
-Create a robust parser that can read both .twb (uncompressed XML) and .twbx (compressed zip containing XML) Tableau workbook files. Extract the XML structure, parse dashboard elements, worksheets, and formatting properties into a usable Python object model.
+Create a safe file manager that handles all file I/O operations: reading original Tableau files, creating automatic timestamped backups, and writing styled outputs. Support both .twb (uncompressed XML) and .twbx (compressed zip) formats with robust error handling.
 
 ## Parent Ticket
-TICKET-0005
+TICKET-0002
 
 ## Dependencies
-None (first child ticket)
+- TICKET-0003 (requires parser to read files)
+- TICKET-0005 (requires styled workbook object to write)
 
 ## Implementation Plan
 
-### 1. Create Parser Module Structure
-* Create `src/parser/tableau_parser.py`
-* Create `src/parser/workbook.py` (data models)
-* Create `tests/parser/test_tableau_parser.py`
+### 1. Create File Manager Module
+* Create `src/utils/file_manager.py`
+* Create `tests/utils/test_file_manager.py`
 
-### 2. Implement .twbx Handler
-* Detect .twbx file format
-* Extract zip contents to temporary location
-* Locate the .twb XML file inside
-* Clean up temporary files after parsing
+### 2. Implement Backup System
+* Generate timestamped backup filenames (e.g., `dashboard_backup_20260707_143022.twbx`)
+* Copy original file to `tableau/backups/` before any modification
+* Verify backup was created successfully
+* Handle backup failures gracefully (abort operation if backup fails)
 
-### 3. Implement .twb XML Parser
-* Parse XML using lxml
-* Extract workbook structure (dashboards, worksheets)
-* Identify formatting elements:
-  - Color definitions
-  - Font specifications
-  - Layout properties
-  - Chart configurations
-* Build internal object model
+### 3. Implement .twb Writer
+* Convert styled workbook object back to XML
+* Write XML with proper formatting (pretty print)
+* Preserve XML declaration and namespaces
+* Validate XML structure before writing
 
-### 4. Create Data Models
-* `Workbook` class - represents entire workbook
-* `Dashboard` class - individual dashboard
-* `Worksheet` class - individual worksheet
-* `Format` class - styling properties
+### 4. Implement .twbx Writer
+* Create temporary directory
+* Write .twb XML file
+* Copy any data extracts from original (if present)
+* Compress into .twbx zip archive
+* Clean up temporary files
+* Validate zip integrity
 
-### 5. Add Validation
-* Verify file format (is it a valid Tableau file?)
-* Check XML structure
-* Handle corrupted or incomplete files gracefully
-* Provide meaningful error messages
+### 5. Implement Safe Write Operations
+* Write to temporary file first
+* Validate written file can be parsed
+* Only then move to final location
+* Rollback on any errors
 
-### 6. Testing
-* Test with provided .twbx file
-* Test with sample .twb file
-* Test error cases (invalid files, corrupted zip, missing XML)
-* Verify parsed structure matches expected format
+### 6. Add Output Naming
+* Generate output filenames: `{original_name}_styled.{ext}`
+* Save to `tableau/output/` directory
+* Handle filename collisions (append number if exists)
+* Return output file path
+
+### 7. Testing
+* Test backup creation
+* Test .twb writing
+* Test .twbx writing (zip creation)
+* Test error handling (disk full, permissions, invalid paths)
+* Test rollback on failure
+* Verify output files are valid Tableau workbooks
 
 ## Technical Details
 
-**File Format Notes:**
-- `.twb` = Uncompressed XML file
-- `.twbx` = ZIP archive containing .twb + data extracts
-- XML namespace: `http://tableau.com/api` (or similar)
-- Root element: `<workbook>`
+**Backup Strategy:**
+```python
+def create_backup(original_path: str) -> str:
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = Path(original_path).stem
+    extension = Path(original_path).suffix
+    backup_path = f"tableau/backups/{filename}_backup_{timestamp}{extension}"
+    shutil.copy2(original_path, backup_path)
+    return backup_path
+```
 
-**Key XML Elements to Parse:**
-- `<workbook>` - root
-- `<dashboards>` - dashboard definitions
-- `<worksheets>` - worksheet definitions
-- `<datasources>` - data connections (preserve these)
-- `<preferences>` - formatting and style properties
-- `<style>` - color palettes, fonts
+**Safe Write Pattern:**
+```python
+def safe_write(workbook, output_path):
+    temp_path = output_path + ".tmp"
+    try:
+        write_to_file(workbook, temp_path)
+        validate_file(temp_path)  # Ensure it's valid
+        shutil.move(temp_path, output_path)
+    except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise
+```
+
+**ZIP Structure for .twbx:**
+```
+dashboard.twbx (zip file)
+├── dashboard.twb (main XML)
+└── Data/
+    └── Extracts/ (optional data extracts - preserve from original)
+```
 
 ## Testing Strategy
 
 ```python
-def test_parse_twbx():
-    parser = TableauParser()
-    workbook = parser.parse("tableau/input/RE - NO - Kraken - Competitor Analysis Hjem.twbx")
+def test_create_backup():
+    manager = FileManager()
+    original = "tableau/input/sample.twbx"
+    backup_path = manager.create_backup(original)
     
-    assert workbook is not None
-    assert len(workbook.dashboards) > 0
-    assert workbook.file_type == "twbx"
+    assert os.path.exists(backup_path)
+    assert "backup_" in backup_path
+    assert filecmp.cmp(original, backup_path)  # Exact copy
 
-def test_parse_invalid_file():
+def test_write_styled_twbx():
+    manager = FileManager()
+    styled_workbook = create_styled_workbook()
+    
+    output_path = manager.write(
+        styled_workbook,
+        original_path="tableau/input/dashboard.twbx",
+        output_dir="tableau/output"
+    )
+    
+    assert os.path.exists(output_path)
+    assert output_path.endswith("_styled.twbx")
+    
+    # Verify it's a valid Tableau file
     parser = TableauParser()
-    with pytest.raises(InvalidTableauFileError):
-        parser.parse("invalid.txt")
+    workbook = parser.parse(output_path)
+    assert workbook is not None
+
+def test_backup_failure_aborts():
+    manager = FileManager()
+    
+    with pytest.raises(BackupFailedError):
+        # Simulate disk full or permissions error
+        manager.write(workbook, "/readonly/path.twbx")
 ```
 
 ## Success Criteria
 
-✅ Can read .twbx files (extract XML from zip)
-✅ Can read .twb files (parse XML directly)
-✅ Extracts dashboard and worksheet structures
-✅ Identifies current formatting/styling properties
-✅ Handles errors gracefully with clear messages
-✅ Unit tests pass with provided file
-✅ Returns usable Python object model
+✅ Creates timestamped backups before modification
+✅ Writes .twb files (uncompressed XML)
+✅ Writes .twbx files (compressed zip with correct structure)
+✅ Generates appropriate output filenames (_styled suffix)
+✅ Handles file collisions (appends number if file exists)
+✅ Validates written files are parseable
+✅ Rolls back on errors (doesn't leave corrupted files)
+✅ Preserves data extracts in .twbx files
+✅ Unit tests pass for all scenarios
+✅ Integration test: backup → write → verify cycle works
 
 ## Notes
 
-Focus on **reading only** in this ticket. Writing/modification happens in later tickets.
+**Safety is paramount**:
+- ALWAYS create backup before any modification
+- ALWAYS validate written files
+- NEVER overwrite original files
+- ALWAYS clean up temporary files
 
-Do NOT modify the original file - this is read-only parsing.
+If backup fails, the entire operation must abort - better to fail safely than risk data loss.
+
+Preserve the complete structure of .twbx files, including any embedded data extracts.
 
 ## Estimated Complexity
-Medium - XML parsing with zip handling
+Medium - File I/O with zip handling and safety mechanisms
