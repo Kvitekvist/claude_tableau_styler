@@ -35,9 +35,13 @@ class LayoutTransformer:
             if dashboard.xml_element is None:
                 continue
 
-            # Set padding
+            # Set padding on dashboard
             padding = template.layout.dashboard.padding
             self._set_padding(dashboard.xml_element, padding)
+
+            # Apply padding to all zones in dashboard
+            for zone in dashboard.xml_element.findall('.//zone'):
+                self._set_padding(zone, padding)
 
     def _apply_container_layout(self, workbook: Workbook, template: StyleTemplate) -> None:
         """Apply layout properties to containers"""
@@ -80,6 +84,10 @@ class LayoutTransformer:
         # Tableau uses 'padding' attribute on zones
         if element.tag == 'zone':
             element.set('padding', str(padding))
+
+        # Also set margin if applicable
+        if 'margin' not in element.attrib:
+            element.set('margin', str(padding // 2))  # Margin is half of padding
 
     def _set_container_background(self, element: etree._Element, color: str) -> None:
         """Set background color on container"""

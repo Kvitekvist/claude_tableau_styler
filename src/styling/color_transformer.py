@@ -73,9 +73,114 @@ class ColorTransformer:
 
     def _apply_element_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
         """Apply colors to specific elements (gridlines, borders, etc.)"""
-        # This is a simplified implementation
-        # Full implementation would traverse all worksheet elements
-        pass
+        # Apply colors to chart marks (bars, lines, shapes)
+        self._apply_chart_mark_colors(workbook, template)
+
+        # Apply grid line colors
+        self._apply_gridline_colors(workbook, template)
+
+        # Apply axis colors
+        self._apply_axis_colors(workbook, template)
+
+    def _apply_chart_mark_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
+        """
+        Apply template colors to chart marks (bars, lines, shapes)
+
+        Modifies <style-rule element='mark'> with <encoding attr='color'>
+        """
+        if workbook.xml_root is None:
+            return
+
+        # Get categorical palette from template
+        palette = template.colors.categorical
+        if not palette:
+            return
+
+        # Find all worksheets in XML
+        for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
+            # Find all style-rule elements for marks
+            for style_rule in worksheet_elem.findall('.//style-rule[@element="mark"]'):
+                # Find color encodings
+                for encoding in style_rule.findall('.//encoding[@attr="color"]'):
+                    # Update color maps with template palette
+                    maps = encoding.findall('map')
+                    for i, map_elem in enumerate(maps):
+                        # Cycle through template palette
+                        new_color = palette[i % len(palette)]
+                        map_elem.set('to', new_color)
+
+    def _apply_gridline_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
+        """Apply gridline colors from template"""
+        if workbook.xml_root is None:
+            return
+
+        gridline_color = template.chart_elements.gridlines.color
+        gridline_opacity = template.chart_elements.gridlines.opacity
+
+        # Find all worksheets
+        for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
+            # Find or create style section
+            style = worksheet_elem.find('.//style')
+            if style is None:
+                continue
+
+            # Find or create gridline style-rule
+            grid_rule = None
+            for rule in style.findall('style-rule'):
+                if rule.get('element') == 'gridline':
+                    grid_rule = rule
+                    break
+
+            if grid_rule is None:
+                grid_rule = etree.SubElement(style, 'style-rule')
+                grid_rule.set('element', 'gridline')
+
+            # Set gridline color
+            self._set_format_value(grid_rule, 'stroke-color', gridline_color)
+            self._set_format_value(grid_rule, 'stroke-opacity', str(gridline_opacity))
+
+    def _apply_axis_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
+        """Apply axis colors from template"""
+        if workbook.xml_root is None:
+            return
+
+        axis_color = template.chart_elements.axes.line_color
+
+        # Find all worksheets
+        for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
+            # Find or create style section
+            style = worksheet_elem.find('.//style')
+            if style is None:
+                continue
+
+            # Find or create axis style-rule
+            axis_rule = None
+            for rule in style.findall('style-rule'):
+                if rule.get('element') == 'axis':
+                    axis_rule = rule
+                    break
+
+            if axis_rule is None:
+                axis_rule = etree.SubElement(style, 'style-rule')
+                axis_rule.set('element', 'axis')
+
+            # Set axis color
+            self._set_format_value(axis_rule, 'stroke-color', axis_color)
+
+    def _set_format_value(self, parent: etree._Element, attr: str, value: str) -> None:
+        """Set a format attribute value in a style-rule"""
+        # Find existing format element
+        format_elem = None
+        for fmt in parent.findall('format'):
+            if fmt.get('attr') == attr:
+                format_elem = fmt
+                break
+
+        if format_elem is None:
+            format_elem = etree.SubElement(parent, 'format')
+            format_elem.set('attr', attr)
+
+        format_elem.set('value', value)
 
     def _set_background_color(self, element: etree._Element, color: str) -> None:
         """
