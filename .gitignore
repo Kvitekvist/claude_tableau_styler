@@ -44,3 +44,8 @@ obj/
 
 # Claude Code runtime state
 .claude/scheduled_tasks.lock
+
+# Embedded Python (distributable, but not in git)
+/.python/
+get-pip.py
+python-embed.zip
