@@ -96,18 +96,16 @@ class ColorTransformer:
         if not palette:
             return
 
-        # Find all worksheets in XML
-        for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
-            # Find all style-rule elements for marks
-            for style_rule in worksheet_elem.findall('.//style-rule[@element="mark"]'):
-                # Find color encodings
-                for encoding in style_rule.findall('.//encoding[@attr="color"]'):
-                    # Update color maps with template palette
-                    maps = encoding.findall('map')
-                    for i, map_elem in enumerate(maps):
-                        # Cycle through template palette
-                        new_color = palette[i % len(palette)]
-                        map_elem.set('to', new_color)
+        # Find all style-rule elements for marks (not just within worksheets)
+        for style_rule in workbook.xml_root.findall('.//style-rule[@element="mark"]'):
+            # Find color encodings
+            for encoding in style_rule.findall('.//encoding[@attr="color"]'):
+                # Update color maps with template palette
+                maps = encoding.findall('map')
+                for i, map_elem in enumerate(maps):
+                    # Cycle through template palette
+                    new_color = palette[i % len(palette)]
+                    map_elem.set('to', new_color)
 
     def _apply_gridline_colors(self, workbook: Workbook, template: StyleTemplate) -> None:
         """Apply gridline colors from template"""
