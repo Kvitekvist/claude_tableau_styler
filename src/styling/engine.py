@@ -16,6 +16,7 @@ from styling.color_transformer import ColorTransformer
 from styling.typography_transformer import TypographyTransformer
 from styling.layout_transformer import LayoutTransformer
 from styling.dashboard_transformer import DashboardTransformer
+from styling.worksheet_transformer import WorksheetTransformer
 
 
 class StylingEngineError(Exception):
@@ -33,6 +34,7 @@ class StylingEngine:
         self.typography_transformer = TypographyTransformer()
         self.layout_transformer = LayoutTransformer()
         self.dashboard_transformer = DashboardTransformer()
+        self.worksheet_transformer = WorksheetTransformer()
 
     def apply_template(self, workbook: Workbook, template: StyleTemplate) -> Workbook:
         """
@@ -63,6 +65,9 @@ class StylingEngine:
 
             # Apply dashboard-specific styling (title zones, KPI cards)
             self.dashboard_transformer.apply(styled_workbook, template)
+
+            # Apply worksheet optimizations (tables, charts, KPI cards)
+            self.worksheet_transformer.apply(styled_workbook, template)
 
             # Validate the modified XML is still well-formed
             self._validate_workbook(styled_workbook)
