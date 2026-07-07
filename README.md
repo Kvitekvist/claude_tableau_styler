@@ -1,126 +1,165 @@
-# AI Project Bootstrap Template
+# Tableau Dashboard Styler
 
 ## Overview
 
-This is a copy-pasteable starting point for new AI-assisted software projects.
-It provides a standardized structure, workflow, and long-term memory system so
-that any project built from it stays maintainable over months of AI-assisted
-development, rather than accumulating undocumented, untracked changes.
+**Tableau Dashboard Styler** is a desktop tool for applying consistent, professional styling to Tableau dashboards. It automates the process of updating colors, fonts, layouts, and formatting across single or multiple dashboard files, ensuring brand consistency and visual appeal.
+
+---
+
+## Features (Planned)
+
+* **Dashboard Parsing** - Read and analyze Tableau .twb and .twbx files
+* **Style Application** - Apply custom color palettes, fonts, and layouts
+* **Template Library** - Pre-built style templates for common use cases
+* **Batch Processing** - Style multiple dashboards at once
+* **Preview Mode** - See before/after comparisons
+* **Safe Operations** - Automatic backup creation before modifications
+* **Configuration Export/Import** - Share style configurations across projects
 
 ---
 
 ## Quick Start
 
-### Creating a New Project from This Template
+### Prerequisites
 
-**Prerequisites**: Git and [GitHub CLI](https://cli.github.com/) installed
+* Windows 11
+* Python 3.10+
+* Git
+
+### Setup
 
 ```bash
-# Step 1: Create from template
-gh repo create my-new-project --template Kvitekvist/claude_project_framework --private --clone
-cd my-new-project
+# Clone the repository
+git clone <repository-url>
+cd Tableau_Styler
 
-# Step 2: Initialize your project
-.\scripts\init_project.bat
+# Run setup script
+.\scripts\setup.bat
 
-# Step 3: Start building!
+# Run the application
+.\scripts\run.bat
 ```
 
-The initialization script will prompt you for project details and customize the template
-for your specific language, framework, and workflow.
+---
 
-**See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md) for complete setup instructions.**
+## Project Status
+
+**Version:** 1.1.0  
+**Status:** Initial Development  
+**Current Milestone:** Project Setup & Core Foundation
 
 ---
 
-## Manual Setup (Alternative)
+## Technology Stack
 
-If you prefer to set up manually:
-
-1. Copy this entire folder to a new location and rename it for the new project.
-2. Open the project in Claude Code.
-3. Answer `.claude/prompts/project_questionnaire.md` (project name, stack,
-   git details, quality requirements, etc.).
-4. Let Claude follow `.claude/prompts/project_init.md` to fill in
-   `.claude/project_config.md`, the memory files, scripts, and root
-   documentation for the new project.
-5. Start requesting features and bug fixes — every change is tracked through
-   the ticket system described below.
-
----
-
-## How It Works
-
-* **`.claude/CLAUDE.md`** — the operating instructions Claude follows in this
-  repository: when to create tickets, what to update before every commit, and
-  the git workflow to use.
-* **`.claude/PROJECT_RULES.md`** — the definition of done for any ticket.
-* **`.claude/PROJECT_SKELETON.md`** — the canonical folder/file layout for any
-  project built from this template.
-* **`.claude/memory/`** — persistent, continuously-updated project memory
-  (architecture, tech stack, coding conventions, project status,
-  ticket history). Read at the start of every session.
-* **`.claude/prompts/`** — step-by-step workflows for features, bug fixes,
-  refactors, releases, and initializing a brand-new project.
-* **`.claude/templates/`** — reusable templates for README, CHANGELOG, and
-  ticket files.
-* **`tickets/`** — every feature and bug fix is tracked as a ticket
-  (`open/`, `closed/`, `archived/`), based on `tickets/TEMPLATE.md`.
-* **`scripts/`** — helper batch scripts (`setup`, `build`, `run`,
-  `git_commit`, `clear_cache`, `release`), customized per project's stack.
+* **Language:** Python 3.10+
+* **XML Parsing:** lxml
+* **UI Framework:** TBD (Tkinter/PyQt6/Web-based)
+* **Configuration:** YAML/JSON
+* **Build:** PyInstaller (Windows executable)
+* **Testing:** pytest
 
 ---
 
 ## Project Structure
 
-See `.claude/PROJECT_SKELETON.md` for the full, authoritative layout.
+```
+Tableau_Styler/
+├── src/                 # Source code
+│   ├── parser/          # Tableau file parsing
+│   ├── styling/         # Styling engine
+│   ├── ui/              # User interface
+│   ├── config/          # Configuration management
+│   └── utils/           # Helper utilities
+├── tests/               # Unit and integration tests
+├── assets/              # UI resources and sample files
+├── scripts/             # Build and utility scripts
+├── docs/                # Documentation
+├── tickets/             # Feature and bug tracking
+└── .claude/             # AI assistant memory and workflows
+```
 
 ---
 
 ## Development Workflow
 
-* Every feature or bug fix requires a ticket before code is written.
-* Documentation (README, architecture, changelog) is updated
-  alongside the code change, not after the fact.
-* Commits follow the format `[TICKET-####] Short description`.
-* Memory files are the source of truth for project context across sessions.
+This project follows a structured AI-assisted development workflow:
+
+* **Ticket-Driven**: Every feature and bug fix requires a ticket
+* **Memory System**: Project context persists across AI sessions
+* **Version Control**: All commits follow `[TICKET-####] Description` format
+* **Documentation First**: Documentation updates alongside code changes
+
+See [`.claude/CLAUDE.md`](.claude/CLAUDE.md) for complete workflow details.
 
 ---
 
-## Version
+## How It Works
 
-Framework Version: 1.1.0
+### Tableau File Format
 
-See `.claude/framework_version.md` for framework-level version history and
-migration rules.
+Tableau workbooks are XML-based:
+* **.twb** - Uncompressed XML file
+* **.twbx** - Compressed archive containing .twb and data sources
 
-### What's New in 1.1.0
+### Styling Process
 
-* **Ticket Decomposition** - Automatically break large requests into parent/child
-  tickets with dependency tracking
-* **Enhanced Ticket Template** - Support for parent tickets, child tickets, and
-  dependencies
-* **Decomposition Workflow** - Comprehensive guide in
-  `.claude/prompts/decomposition.md` for managing complex multi-part features
+1. **Parse** - Extract dashboard structure and current styling
+2. **Transform** - Apply style rules to XML elements
+3. **Validate** - Ensure changes don't break dashboard functionality
+4. **Save** - Write modified workbook (with backup of original)
 
 ---
 
-## For Repository Administrators
+## Contributing
 
-### Enable GitHub Template Feature
+1. Review the project memory files in `.claude/memory/`
+2. Create a ticket in `tickets/open/` before starting work
+3. Follow coding conventions in `.claude/memory/coding_conventions.md`
+4. Update documentation and changelog with changes
+5. Commit with ticket reference: `[TICKET-####] Description`
 
-To make this repository usable as a template:
+---
 
-1. Go to **Settings** in this GitHub repository
-2. Under **General**, check ✅ **Template repository**
-3. Save changes
+## Roadmap
 
-Users can then create new projects using the Quick Start commands above.
+### Phase 1: Foundation (Current)
+* Project setup and structure
+* Basic Tableau file parsing
+* Simple style application proof-of-concept
 
-See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md) for administration details.
+### Phase 2: Core Features
+* Complete styling engine
+* Template system
+* Basic UI
+
+### Phase 3: Advanced Features
+* Batch processing
+* Cloud integration (Tableau Server)
+* AI-powered styling suggestions
 
 ---
 
 ## License
 
-No license has been chosen yet — see `LICENSE`.
+See [LICENSE](LICENSE) file for details.
+
+---
+
+## Documentation
+
+* [Quick Start Guide](docs/QUICK_START.md)
+* [Architecture](.claude/memory/architecture.md)
+* [Project Memory](.claude/memory/project_memory.md)
+* [Changelog](CHANGELOG.md)
+
+---
+
+## Version
+
+Project Version: 1.1.0  
+Framework Version: 1.1.0
+
+---
+
+**Built with the [AI Project Bootstrap Framework](https://github.com/Kvitekvist/claude_project_framework)**

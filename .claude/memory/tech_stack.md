@@ -8,83 +8,63 @@ Update it whenever the technology stack changes.
 
 # Project Information
 
-**Project Name:**
+**Project Name:** Tableau Dashboard Styler
 
-**Version:**
+**Version:** 1.1.0
 
-**Created:**
+**Created:** 2026-07-07
 
 ---
 
 # Programming Language
 
-Language:
+Language: Python
 
-Version:
+Version: 3.10+ (to be confirmed based on environment)
 
 ---
 
 # Framework
 
-Name:
+Name: TBD (To be decided - options: Tkinter, PyQt6, or Flask/FastAPI)
 
-Version:
+Version: TBD
 
-Purpose:
+Purpose: User interface for dashboard styling configuration and preview
 
 ---
 
 # Runtime
 
-Example:
-
-* Python
-* .NET
-* Node.js
-* Java Runtime
-* Native Executable
+Python 3.10+
 
 ---
 
 # Package Manager
 
-Example:
+pip (Python package manager)
 
-* pip
-* npm
-* pnpm
-* yarn
-* NuGet
-* Cargo
-
-Version:
+Version: Latest with Python installation
 
 ---
 
 # Build System
 
-Describe how the project is built.
+PyInstaller (for creating Windows executable)
 
-Example:
-
-* PyInstaller
-* CMake
-* MSBuild
-* Gradle
-* Make
-* Electron Builder
+Purpose: Package Python application into standalone .exe for distribution
 
 ---
 
 # Development Environment
 
-Operating System:
+Operating System: Windows 11 Enterprise
 
-IDE:
+IDE: VS Code
 
-Compiler:
+Compiler: N/A (Python is interpreted)
 
-SDK:
+SDK: Python 3.10+
 
 ---
 
@@ -92,112 +72,71 @@ SDK:
 
 List major dependencies.
 
-Example:
-
 | Library | Version | Purpose |
 | ------- | ------- | ------- |
-|         |         |         |
-|         |         |         |
-|         |         |         |
+| lxml | Latest | XML parsing for Tableau .twb files |
+| pyyaml | Latest | Configuration file management |
+| PyQt6 OR tkinter | Latest | User interface (to be decided) |
+| pytest | Latest | Unit testing |
+| black | Latest | Code formatting |
+| pylint | Latest | Code linting |
 
 ---
 
 # External Services
 
-Document services used by the project.
-
-Examples:
-
-* GitHub
-* OpenAI API
-* Anthropic API
-* Firebase
-* Supabase
-* SQLite
-* PostgreSQL
+* GitHub - Source code repository
+* (Future: Tableau Server API for cloud integration)
 
 ---
 
 # Storage
 
-Document data storage.
-
-Example:
-
-* SQLite
-* JSON
-* Local Files
-* PostgreSQL
-* Redis
+* Local file system - Tableau workbook files (.twb/.twbx)
+* JSON/YAML - Style configuration files
+* Local file system - User preferences and templates
 
 ---
 
 # APIs
 
-Document external APIs.
-
-Include:
-
-* Authentication method
-* Rate limits
-* Important endpoints
-* Documentation links
+**Tableau File Format**
+* Format: XML-based workbook files
+* Documentation: Tableau Developer Documentation
+* No API authentication required for local files
+* (Future: Tableau Server REST API for cloud integration)
 
 ---
 
 # Build Output
 
-Describe what is produced.
-
-Examples:
-
-* Executable
-* Installer
-* Docker Image
-* Library
-* Website
+* Windows executable (.exe) - PyInstaller-built standalone application
+* Installation package - Windows installer (future)
 
 ---
 
 # Deployment
 
-Describe deployment method.
-
-Examples:
-
-* Manual
-* GitHub Releases
-* Docker
-* Cloud
-* Windows Installer
+* GitHub Releases - Versioned releases with executable downloads
+* Manual - Direct .exe distribution for now
+* (Future: Windows Installer with auto-update capability)
 
 ---
 
 # Required Tools
 
-List required software.
-
-Examples:
-
-* Git
-* Python
-* Node.js
-* Visual Studio
-* VS Code
-* CMake
+* Git - Version control
+* Python 3.10+ - Runtime and development
+* VS Code - Primary IDE
+* pip - Package management
 
 ---
 
 # Environment Variables
 
-Document required environment variables.
-
-Example:
-
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
-|          |          |             |
-|          |          |             |
+| None currently | N/A | No environment variables required yet |
 
 Do **not** store secrets in this file.
 

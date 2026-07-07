@@ -1,51 +1,46 @@
 # Changelog
 
-All notable changes to this template framework should be documented here.
+All notable changes to this project will be documented in this file.
 
 ---
 
-## Version 1.1.0 — 2026-07-06
+## [Unreleased]
 
-### Added
-
-* Ticket decomposition system for managing large requests
-* Parent/child ticket relationships in ticket template
-* Dependency tracking between tickets
-* `.claude/prompts/decomposition.md` - comprehensive decomposition workflow guide
-* Decomposition guidance in CLAUDE.md and PROJECT_RULES.md
-
-### Changed
-
-* Enhanced ticket template with Parent Ticket, Child Tickets, and Dependencies fields
-* Updated feature workflow in CLAUDE.md to include scope assessment and decomposition
+### Planned
+- Tableau file parser implementation
+- Basic styling engine
+- Initial UI framework
+- Style configuration system
 
 ---
 
-## Version 1.0.0 — 2026-07-05
-
-Initial template framework creation.
+## [1.1.0] - 2026-07-07
 
 ### Added
-
-* `.claude/` AI operating instructions, rules, and framework version tracking.
-* Persistent memory system (`.claude/memory/`): architecture, coding conventions,
-  project memory, project status, tech stack, ticket memory.
-* Workflow prompts (`.claude/prompts/`): feature, bugfix, refactor, release,
-  project initialization, and project questionnaire.
-* Reusable templates (`.claude/templates/`): README, changelog, ticket.
-* Ticket system skeleton (`tickets/open`, `tickets/closed`, `tickets/archived`, `tickets/TEMPLATE.md`).
-* Helper scripts (`scripts/`): setup, build, run, git commit, clear cache, release.
-* Standard project skeleton (`src/`, `tests/`, `docs/`, `build/`, `releases/`, `assets/`).
-* Root documentation: README, CHANGELOG, LICENSE, `.gitignore`, `version.txt`.
+- Initial project setup for Tableau Dashboard Styler
+- Project memory system configured for Tableau styling tool
+- Architecture documentation defining core components
+- Technology stack selection (Python, lxml, PyInstaller)
+- Updated README with project purpose and roadmap
+- Comprehensive project initialization
 
 ### Changed
+- Updated all memory files to reflect Tableau styling purpose
+- Configured tech stack for Python-based development
+- Updated project status to "Initial Development"
 
-*
+---
 
-### Fixed
+## Framework History
 
-*
+### [1.1.0] - Framework Features
+- Ticket decomposition system for managing large requests
+- Enhanced ticket template with parent/child/dependency support
+- GitHub Template initialization script
+- Distribution documentation
 
-### Removed
-
-*
+### [1.0.0] - Framework Foundation
+- Initial AI-assisted development framework
+- Memory system for project context
+- Ticket-driven workflow
+- Build and deployment scripts

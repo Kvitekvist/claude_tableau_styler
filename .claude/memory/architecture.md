@@ -2,7 +2,7 @@
 
 ## Overview
 
-Describe the overall architecture.
+**Tableau Dashboard Styler** is designed as a desktop application that reads Tableau workbook files (.twb/.twbx), applies styling rules, and generates updated workbooks. The architecture follows a modular design separating file parsing, styling logic, and user interface.
 
 ---
 
@@ -10,44 +10,113 @@ Describe the overall architecture.
 
 ### User Interface
 
-Describe UI.
+**Technology**: TBD (Options: Tkinter, PyQt6, or web-based with Flask/FastAPI)
 
-### Backend
+The UI provides:
+- Dashboard preview/selection
+- Style configuration interface
+- Before/after comparison
+- Batch processing controls
+- Template management
 
-Describe backend.
+### Tableau Parser
 
-### Database
+**Core Component**: Tableau workbook file parser
 
-Describe storage.
+Responsibilities:
+- Parse .twb (XML) and .twbx (zipped XML) files
+- Extract dashboard structure, worksheets, formatting
+- Build internal representation of dashboard elements
+- Validate Tableau file format compatibility
 
-### Networking
+### Styling Engine
 
-Describe networking.
+**Core Logic**: Style application and transformation
 
-### Services
+Responsibilities:
+- Apply color palettes to charts and visualizations
+- Modify fonts, sizes, and spacing
+- Update dashboard layout properties
+- Apply formatting rules to worksheets
+- Preserve data connections and calculations
 
-Describe supporting services.
+### File Manager
+
+**I/O Operations**: File reading, writing, backup
+
+Responsibilities:
+- Safe file reading/writing with backup creation
+- Handle .twb (uncompressed) and .twbx (compressed) formats
+- Version control for modified files
+- Export styling configurations
+
+### Configuration System
+
+**Storage**: JSON/YAML-based style definitions
+
+Responsibilities:
+- Store style templates
+- User preferences
+- Custom color palettes
+- Font configurations
+- Layout rules
 
 ---
 
 ## Folder Responsibilities
 
-Explain what each major folder contains.
+- **`src/`** - Source code for all components
+  - `src/parser/` - Tableau file parsing logic
+  - `src/styling/` - Styling engine and rules
+  - `src/ui/` - User interface components
+  - `src/utils/` - Helper functions and utilities
+  - `src/config/` - Configuration management
+- **`tests/`** - Unit and integration tests
+- **`assets/`** - UI resources, icons, sample files
+- **`scripts/`** - Build, setup, and utility scripts
+- **`docs/`** - User documentation and guides
+- **`tickets/`** - Feature and bug tracking
+- **`.claude/`** - AI assistant memory and workflows
 
 ---
 
 ## Dependencies
 
-Document important libraries and why they are used.
+### Core Dependencies (To Be Determined)
+
+**XML Parsing**:
+- `lxml` or `xml.etree.ElementTree` - Parse Tableau .twb XML files
+
+**File Handling**:
+- `zipfile` - Handle .twbx compressed files
+- `shutil` - File operations and backups
+
+**Configuration**:
+- `pyyaml` or `json` - Style configuration files
+
+**UI Framework** (Choose one):
+- `tkinter` (built-in, lightweight)
+- `PyQt6` (professional, feature-rich)
+- `Flask/FastAPI` + web frontend (browser-based)
 
 ---
 
 ## Design Principles
 
-Record architectural principles followed throughout the project.
+1. **Non-Destructive**: Always create backups before modifying files
+2. **Modular**: Separate concerns (parsing, styling, UI) for testability
+3. **Extensible**: Easy to add new styling rules and templates
+4. **Safe**: Validate all file operations and XML modifications
+5. **User-Friendly**: Clear error messages and intuitive workflows
+6. **Reversible**: Support undo/restore operations
 
 ---
 
 ## Future Improvements
 
-Track planned architectural enhancements.
+- **Plugin System**: Allow custom styling rules via plugins
+- **Cloud Integration**: Connect to Tableau Server/Online API
+- **AI Styling**: Machine learning-based styling suggestions
+- **Collaboration**: Share and rate style templates
+- **Performance**: Optimize for large workbooks with many dashboards
+- **Cross-Platform**: Ensure compatibility on Windows, Mac, Linux
