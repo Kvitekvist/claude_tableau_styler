@@ -94,6 +94,39 @@ class LayoutBuilder:
         # Add devicelayouts (required for responsive design)
         devicelayouts = etree.SubElement(dashboard, 'devicelayouts')
 
+        # Add minimal phone layout
+        phone_layout = etree.SubElement(devicelayouts, 'devicelayout')
+        phone_layout.set('auto-generated', 'true')
+        phone_layout.set('name', 'Phone')
+
+        # Phone layout needs layout-options with title
+        phone_layout_options = etree.SubElement(phone_layout, 'layout-options')
+        phone_title = etree.SubElement(phone_layout_options, 'title')
+        phone_text = etree.SubElement(phone_title, 'formatted-text')
+        phone_run = etree.SubElement(phone_text, 'run')
+        phone_run.set('bold', 'true')
+        phone_run.set('fontname', 'Arial')
+        phone_run.set('fontsize', '20')
+        phone_run.set('fontcolor', '#333333')
+        phone_run.text = title
+
+        # Phone size
+        phone_size = etree.SubElement(phone_layout, 'size')
+        phone_size.set('maxheight', '2350')
+        phone_size.set('minheight', '2350')
+        phone_size.set('sizing-mode', 'vscroll')
+
+        # Phone zones (simplified - single container)
+        phone_zones = etree.SubElement(phone_layout, 'zones')
+        phone_root = etree.SubElement(phone_zones, 'zone')
+        phone_root.set('h', '100000')
+        phone_root.set('id', str(self.zone_id))
+        self.zone_id += 1
+        phone_root.set('type-v2', 'layout-basic')
+        phone_root.set('w', '100000')
+        phone_root.set('x', '0')
+        phone_root.set('y', '0')
+
         # Add simple-id (required)
         simple_id = etree.SubElement(dashboard, 'simple-id')
         simple_id.set('uuid', '{' + 'A' * 8 + '-' + 'B' * 4 + '-' + 'C' * 4 + '-' + 'D' * 4 + '-' + 'E' * 12 + '}')
