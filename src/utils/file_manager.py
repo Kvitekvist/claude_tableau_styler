@@ -153,8 +153,10 @@ class FileManager:
         temp_path = output_path + ".tmp"
 
         try:
-            # Write XML with proper formatting
-            tree = workbook.xml_tree
+            # CRITICAL: Use xml_root, not xml_tree!
+            # xml_tree may not reflect modifications made to xml_root
+            # Rebuild the tree from the modified root
+            tree = etree.ElementTree(workbook.xml_root)
             tree.write(
                 temp_path,
                 encoding='utf-8',
@@ -187,7 +189,9 @@ class FileManager:
             twb_filename = Path(workbook.file_path).stem + ".twb"
             twb_path = os.path.join(self.temp_dir, twb_filename)
 
-            workbook.xml_tree.write(
+            # CRITICAL: Rebuild tree from modified root
+            tree = etree.ElementTree(workbook.xml_root)
+            tree.write(
                 twb_path,
                 encoding='utf-8',
                 xml_declaration=True,
