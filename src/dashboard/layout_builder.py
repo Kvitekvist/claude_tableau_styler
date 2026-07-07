@@ -28,6 +28,9 @@ class LayoutBuilder:
         self.GRID_COLUMNS = 12
         self.COLUMN_WIDTH = (self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)) // self.GRID_COLUMNS
 
+        # Zone ID counter
+        self.zone_id = 1
+
     def create_modern_dashboard(
         self,
         title: str,
@@ -174,20 +177,30 @@ class LayoutBuilder:
     def _add_kpi_row(self, parent: etree._Element, kpi_worksheets: List[str], height: int) -> None:
         """Add horizontal row of equal-width KPI cards"""
         kpi_container = etree.SubElement(parent, 'zone')
+        kpi_container.set('id', str(self.zone_id))
+        self.zone_id += 1
         kpi_container.set('type-v2', 'layout-flow')
         kpi_container.set('param', 'horz')
         kpi_container.set('h', str(height))
+        kpi_container.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
+        kpi_container.set('x', '0')
+        kpi_container.set('y', '0')
 
         num_kpis = len(kpi_worksheets)
         available_width = self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)
         total_spacing = self.KPI_SPACING * (num_kpis - 1)
         kpi_width = (available_width - total_spacing) // num_kpis
 
-        for worksheet_name in kpi_worksheets:
+        x_pos = 0
+        for i, worksheet_name in enumerate(kpi_worksheets):
             kpi_zone = etree.SubElement(kpi_container, 'zone')
+            kpi_zone.set('id', str(self.zone_id))
+            self.zone_id += 1
             kpi_zone.set('name', worksheet_name)
             kpi_zone.set('w', str(kpi_width))
             kpi_zone.set('h', str(height))
+            kpi_zone.set('x', str(x_pos))
+            kpi_zone.set('y', '0')
             kpi_zone.set('type-v2', 'layout-basic')
 
             # Add card styling
@@ -198,11 +211,18 @@ class LayoutBuilder:
             self._add_format(zone_style, 'border-style', 'solid')
             self._add_format(zone_style, 'margin', str(self.CARD_PADDING))
 
+            x_pos += kpi_width + self.KPI_SPACING
+
     def _add_primary_chart(self, parent: etree._Element, worksheet_name: str, height: int) -> None:
         """Add primary trend visualization (full width)"""
         chart_zone = etree.SubElement(parent, 'zone')
+        chart_zone.set('id', str(self.zone_id))
+        self.zone_id += 1
         chart_zone.set('name', worksheet_name)
         chart_zone.set('h', str(height))
+        chart_zone.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
+        chart_zone.set('x', '0')
+        chart_zone.set('y', '0')
         chart_zone.set('type-v2', 'layout-basic')
 
         # Add subtle card background
@@ -216,20 +236,30 @@ class LayoutBuilder:
     def _add_supporting_charts(self, parent: etree._Element, worksheets: List[str], height: int) -> None:
         """Add horizontal row of supporting charts (equal width)"""
         chart_container = etree.SubElement(parent, 'zone')
+        chart_container.set('id', str(self.zone_id))
+        self.zone_id += 1
         chart_container.set('type-v2', 'layout-flow')
         chart_container.set('param', 'horz')
         chart_container.set('h', str(height))
+        chart_container.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
+        chart_container.set('x', '0')
+        chart_container.set('y', '0')
 
         num_charts = len(worksheets)
         available_width = self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)
         total_spacing = self.SECTION_SPACING * (num_charts - 1)
         chart_width = (available_width - total_spacing) // num_charts
 
+        x_pos = 0
         for worksheet_name in worksheets:
             chart_zone = etree.SubElement(chart_container, 'zone')
+            chart_zone.set('id', str(self.zone_id))
+            self.zone_id += 1
             chart_zone.set('name', worksheet_name)
             chart_zone.set('w', str(chart_width))
             chart_zone.set('h', str(height))
+            chart_zone.set('x', str(x_pos))
+            chart_zone.set('y', '0')
             chart_zone.set('type-v2', 'layout-basic')
 
             zone_style = etree.SubElement(chart_zone, 'zone-style')
@@ -239,11 +269,18 @@ class LayoutBuilder:
             self._add_format(zone_style, 'border-style', 'solid')
             self._add_format(zone_style, 'margin', str(self.CHART_PADDING))
 
+            x_pos += chart_width + self.SECTION_SPACING
+
     def _add_detail_table(self, parent: etree._Element, worksheet_name: str, height: int) -> None:
         """Add detail table (full width, scrollable)"""
         table_zone = etree.SubElement(parent, 'zone')
+        table_zone.set('id', str(self.zone_id))
+        self.zone_id += 1
         table_zone.set('name', worksheet_name)
         table_zone.set('h', str(height))
+        table_zone.set('w', str(self.DASHBOARD_WIDTH - (2 * self.OUTER_PADDING)))
+        table_zone.set('x', '0')
+        table_zone.set('y', '0')
         table_zone.set('type-v2', 'layout-basic')
 
         zone_style = etree.SubElement(table_zone, 'zone-style')
