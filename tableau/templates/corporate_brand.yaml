@@ -134,15 +134,15 @@ layout:
   # Dashboard Background
   dashboard:
     background_color: "#FFFFFF"      # White
-    padding: 16                      # Increased for better breathing room
+    padding: 20                      # More breathing room
 
   # Container Styling
   containers:
     background_color: "#F8F9FA"      # Very light gray for card effect
     border_color: "#E0E0E0"          # Subtle border
     border_width: 1
-    padding: 12                      # Generous internal spacing
-    spacing: 8                       # Space between containers
+    padding: 16                      # Even more internal spacing
+    spacing: 12                      # More space between containers
 
   # Worksheet/Sheet Styling
   sheets:
