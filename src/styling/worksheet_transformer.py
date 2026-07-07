@@ -83,9 +83,7 @@ class WorksheetTransformer:
         """
         Optimize chart formatting
 
-        - Data labels visibility and sizing
         - Chart padding and spacing
-        - Legend positioning
         - Axis formatting
         """
         if workbook.xml_root is None:
@@ -95,15 +93,6 @@ class WorksheetTransformer:
             style = worksheet_elem.find('.//style')
             if style is None:
                 continue
-
-            # Mark (data point) styling
-            mark_rule = self._find_or_create_style_rule(style, 'mark')
-
-            # Data labels - make them visible and readable
-            label_rule = self._find_or_create_style_rule(style, 'mark-label')
-            self._set_format_value(label_rule, 'font-size', '10')
-            self._set_format_value(label_rule, 'font-family', 'Arial')
-            self._set_format_value(label_rule, 'font-weight', 'bold')
 
             # Chart padding (increase whitespace around charts)
             pane_rule = self._find_or_create_style_rule(style, 'pane')
@@ -150,30 +139,13 @@ class WorksheetTransformer:
 
     def _optimize_legends(self, workbook: Workbook, template: StyleTemplate) -> None:
         """
-        Optimize legend formatting
+        Optimize legend formatting - limited by Tableau's supported elements
 
-        - Clean styling
-        - Proper spacing
-        - Readable fonts
+        Note: Tableau doesn't support legend-title or legend-label as style-rule elements.
+        Legend styling must be done through other means or manually.
         """
-        if workbook.xml_root is None:
-            return
-
-        for worksheet_elem in workbook.xml_root.findall('.//worksheet'):
-            style = worksheet_elem.find('.//style')
-            if style is None:
-                continue
-
-            # Legend title styling
-            legend_title_rule = self._find_or_create_style_rule(style, 'legend-title')
-            self._set_format_value(legend_title_rule, 'font-weight', 'bold')
-            self._set_format_value(legend_title_rule, 'font-size', '11')
-            self._set_format_value(legend_title_rule, 'font-family', 'Arial')
-
-            # Legend label styling
-            legend_label_rule = self._find_or_create_style_rule(style, 'legend-label')
-            self._set_format_value(legend_label_rule, 'font-size', '10')
-            self._set_format_value(legend_label_rule, 'font-family', 'Arial')
+        # Skip - legend styling not supported via XML manipulation
+        pass
 
     def _find_or_create_style_rule(self, style: etree._Element, element: str) -> etree._Element:
         """
