@@ -83,7 +83,7 @@ typography:
     font_family: "Arial"
     font_size: 20
     font_weight: "bold"
-    color: "#7E2D25"         # Primary Burgundy
+    color: "#333333"         # Dark gray for readability on white
     alignment: "left"
 
   # Sheet/Worksheet Titles
@@ -91,7 +91,7 @@ typography:
     font_family: "Arial"
     font_size: 14
     font_weight: "bold"
-    color: "#222222"         # Near Black
+    color: "#333333"         # Dark gray
     alignment: "left"
 
   # Body Text (labels, tooltips, annotations)
@@ -99,7 +99,7 @@ typography:
     font_family: "Arial"
     font_size: 11
     font_weight: "normal"
-    color: "#222222"         # Near Black
+    color: "#6B6B6B"         # Medium gray for readability
     alignment: "left"
 
   # Axis Labels
@@ -107,7 +107,7 @@ typography:
     font_family: "Arial"
     font_size: 10
     font_weight: "normal"
-    color: "#6B6B6B"         # Dark Gray
+    color: "#6B6B6B"         # Medium gray
 
   # Data Labels (on charts)
   data_labels:
@@ -134,23 +134,23 @@ layout:
   # Dashboard Background
   dashboard:
     background_color: "#FFFFFF"      # White
-    padding: 12                      # Pixels around dashboard edge
+    padding: 16                      # Increased for better breathing room
 
   # Container Styling
   containers:
-    background_color: "#F2F2F2"      # Light Gray for containers
-    border_color: "#D9D9D9"          # Medium Gray borders
+    background_color: "#F8F9FA"      # Very light gray for card effect
+    border_color: "#E0E0E0"          # Subtle border
     border_width: 1
-    padding: 8                       # Internal padding
+    padding: 12                      # Generous internal spacing
     spacing: 8                       # Space between containers
 
   # Worksheet/Sheet Styling
   sheets:
     background_color: "#FFFFFF"      # White
-    border_color: "#D9D9D9"          # Medium Gray borders
+    border_color: "#E0E0E0"          # Subtle border
     border_width: 1
-    padding: 8
-    title_background: "#F2F2F2"      # Light Gray title background
+    padding: 12
+    title_background: "#F8F9FA"      # Light gray title background
 
 # =============================================================================
 # CHART ELEMENTS
@@ -160,16 +160,16 @@ chart_elements:
   # Grid Lines
   gridlines:
     show: true
-    color: "#D9D9D9"                 # Medium Gray
+    color: "#E8E8E8"                 # Even lighter for subtlety
     style: "solid"                   # solid, dashed, dotted
     opacity: 0.3                     # 0.0 to 1.0
 
   # Axis Lines
   axes:
-    line_color: "#6B6B6B"            # Dark Gray
+    line_color: "#B0B0B0"            # Lighter gray
     line_width: 1
     show_zero_line: true
-    zero_line_color: "#222222"       # Near Black for emphasis
+    zero_line_color: "#808080"       # Medium gray for zero line
 
   # Reference Lines
   reference_lines:
@@ -181,12 +181,12 @@ chart_elements:
   # Borders
   borders:
     show: true
-    color: "#D9D9D9"                 # Medium Gray
+    color: "#E0E0E0"                 # Subtle border
     width: 1
 
   # Shadows
   shadows:
-    enabled: false                   # Keep clean, minimal look
+    enabled: false                   # Flat design, no shadows
 
   # Null/Missing Data
   null_values:
@@ -243,11 +243,11 @@ chart_types:
 # =============================================================================
 
 filters:
-  background_color: "#F2F2F2"        # Light Gray
-  border_color: "#D9D9D9"            # Medium Gray
-  text_color: "#222222"              # Near Black
-  highlight_color: "#7E2D25"         # Primary Burgundy when selected
-  dropdown_background: "#FFFFFF"
+  background_color: "#FFFFFF"        # White
+  border_color: "#D0D0D0"            # Subtle border
+  text_color: "#333333"              # Dark gray
+  highlight_color: "#7E2D25"         # Corporate burgundy for selected items
+  dropdown_background: "#F8F9FA"     # Light gray dropdown
 
 # =============================================================================
 # SPECIAL RULES

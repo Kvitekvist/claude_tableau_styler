@@ -20,72 +20,59 @@ class TypographyTransformer:
             workbook: Workbook to modify
             template: Style template with typography configuration
         """
-        # Apply dashboard title fonts
-        self._apply_dashboard_titles(workbook, template)
+        # Apply comprehensive font replacement to ALL formatted text
+        self._apply_to_formatted_text(workbook, template)
 
-        # Apply worksheet title fonts
-        self._apply_worksheet_titles(workbook, template)
-
-        # Apply body text fonts
-        self._apply_body_text(workbook, template)
-
-    def _apply_dashboard_titles(self, workbook: Workbook, template: StyleTemplate) -> None:
-        """Apply typography to dashboard titles"""
-        title_style = template.typography.title
-
-        for dashboard in workbook.dashboards:
-            if dashboard.xml_element is None:
-                continue
-
-            # Find title elements
-            for title_elem in dashboard.xml_element.findall('.//formatted-text'):
-                self._apply_typography_style(title_elem, title_style)
-
-    def _apply_worksheet_titles(self, workbook: Workbook, template: StyleTemplate) -> None:
-        """Apply typography to worksheet titles"""
-        title_style = template.typography.sheet_title
-
-        for worksheet in workbook.worksheets:
-            if worksheet.xml_element is None:
-                continue
-
-            # Find title elements
-            for title_elem in worksheet.xml_element.findall('.//formatted-text'):
-                self._apply_typography_style(title_elem, title_style)
-
-    def _apply_body_text(self, workbook: Workbook, template: StyleTemplate) -> None:
-        """Apply typography to body text elements"""
-        body_style = template.typography.body
-
-        # This would apply to labels, annotations, tooltips, etc.
-        # Simplified implementation
-        pass
-
-    def _apply_typography_style(self, element: etree._Element, style: TypographyStyle) -> None:
+    def _apply_to_formatted_text(self, workbook: Workbook, template: StyleTemplate) -> None:
         """
-        Apply typography style to a formatted text element
+        Apply typography to ALL formatted text elements comprehensively
 
-        Args:
-            element: Formatted text XML element
-            style: Typography style to apply
+        This replaces all Times New Roman fonts, standardizes sizes by context,
+        and ensures consistent color hierarchy throughout the dashboard.
         """
-        # Find or create run element (Tableau's text formatting structure)
-        run = element.find('.//run')
-        if run is None:
-            # Create basic structure if missing
-            run = etree.SubElement(element, 'run')
+        if workbook.xml_root is None:
+            return
 
-        # Set font family
-        run.set('fontname', style.font_family)
+        # Find ALL formatted-text elements globally
+        for text_elem in workbook.xml_root.findall('.//formatted-text'):
+            for run in text_elem.findall('.//run'):
+                # Get current font attributes
+                font_name = run.get('fontname', '')
+                font_size_str = run.get('fontsize', '11')
 
-        # Set font size
-        run.set('fontsize', str(style.font_size))
+                # Parse font size safely
+                try:
+                    font_size = int(font_size_str)
+                except (ValueError, TypeError):
+                    font_size = 11
 
-        # Set font weight (bold/normal)
-        if style.font_weight == 'bold':
-            run.set('bold', 'true')
-        else:
-            run.set('bold', 'false')
+                # Determine context based on font size and apply appropriate styling
+                # Dashboard titles (20pt+)
+                if font_size >= 20:
+                    run.set('fontname', template.typography.title.font_family)
+                    run.set('fontsize', str(template.typography.title.font_size))
+                    if template.typography.title.color:
+                        run.set('fontcolor', template.typography.title.color)
+                    if template.typography.title.font_weight == 'bold':
+                        run.set('bold', 'true')
 
-        # Set font color
-        run.set('foreground', style.color)
+                # Sheet titles / section headers (12-19pt)
+                elif 12 <= font_size < 20:
+                    run.set('fontname', template.typography.sheet_title.font_family)
+                    run.set('fontsize', str(template.typography.sheet_title.font_size))
+                    if template.typography.sheet_title.color:
+                        run.set('fontcolor', template.typography.sheet_title.color)
+                    if template.typography.sheet_title.font_weight == 'bold':
+                        run.set('bold', 'true')
+
+                # Body text / labels (8-11pt)
+                else:
+                    run.set('fontname', template.typography.body.font_family)
+                    # Keep existing size for body text to preserve layout
+                    if template.typography.body.color:
+                        run.set('fontcolor', template.typography.body.color)
+
+                # CRITICAL: Replace Times New Roman regardless of size
+                if 'Times New Roman' in font_name:
+                    run.set('fontname', template.typography.body.font_family)
+

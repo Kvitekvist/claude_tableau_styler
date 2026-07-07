@@ -29,6 +29,9 @@ class LayoutTransformer:
         # Apply worksheet layout
         self._apply_worksheet_layout(workbook, template)
 
+        # Apply zone-style background fixes (remove black backgrounds)
+        self._apply_zone_style_backgrounds(workbook, template)
+
     def _apply_dashboard_layout(self, workbook: Workbook, template: StyleTemplate) -> None:
         """Apply layout properties to dashboards"""
         for dashboard in workbook.dashboards:
@@ -80,14 +83,27 @@ class LayoutTransformer:
             self._set_border(worksheet.xml_element, border_color, border_width)
 
     def _set_padding(self, element: etree._Element, padding: int) -> None:
-        """Set padding on an element"""
+        """Set padding and margin on zones and zone-styles"""
         # Tableau uses 'padding' attribute on zones
         if element.tag == 'zone':
             element.set('padding', str(padding))
-
-        # Also set margin if applicable
-        if 'margin' not in element.attrib:
             element.set('margin', str(padding // 2))  # Margin is half of padding
+
+        # Also update zone-style if it exists
+        zone_style = element.find('zone-style')
+        if zone_style is not None:
+            # Find or create margin format
+            margin_fmt = None
+            for fmt in zone_style.findall('format'):
+                if fmt.get('attr') == 'margin':
+                    margin_fmt = fmt
+                    break
+
+            if margin_fmt is None:
+                margin_fmt = etree.SubElement(zone_style, 'format')
+                margin_fmt.set('attr', 'margin')
+
+            margin_fmt.set('value', str(padding // 2))
 
     def _set_container_background(self, element: etree._Element, color: str) -> None:
         """Set background color on container"""
@@ -127,3 +143,29 @@ class LayoutTransformer:
         border_width_elem = etree.SubElement(style, 'format')
         border_width_elem.set('attr', 'border-width')
         border_width_elem.set('value', str(width))
+
+    def _apply_zone_style_backgrounds(self, workbook: Workbook, template: StyleTemplate) -> None:
+        """
+        Remove harsh black backgrounds from zone-style elements
+
+        Replaces #000103, #000000, #000102 (black) backgrounds and borders
+        with template colors for a modern, professional look.
+        """
+        if workbook.xml_root is None:
+            return
+
+        # Find all zone-style elements (used in title zones, floating elements)
+        for zone_style in workbook.xml_root.findall('.//zone-style'):
+            for format_elem in zone_style.findall('format'):
+                attr = format_elem.get('attr')
+                current = format_elem.get('value', '').lower()
+
+                # Replace black backgrounds with white
+                if attr == 'background-color':
+                    if current in ['#000103', '#000000', '#000102', '#000001']:
+                        format_elem.set('value', template.layout.dashboard.background_color)
+
+                # Replace black borders with light gray
+                elif attr == 'border-color':
+                    if current in ['#000103', '#000000', '#000102', '#000001']:
+                        format_elem.set('value', template.colors.neutrals.get('light_gray', '#F2F2F2'))
