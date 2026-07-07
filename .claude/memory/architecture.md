@@ -71,6 +71,11 @@ Responsibilities:
   - `src/ui/` - User interface components
   - `src/utils/` - Helper functions and utilities
   - `src/config/` - Configuration management
+- **`tableau/`** - Tableau workbook files and templates
+  - `tableau/input/` - Original .twb/.twbx files to be styled
+  - `tableau/output/` - Styled output files
+  - `tableau/backups/` - Automatic backups before modification
+  - `tableau/templates/` - Reusable style configuration files
 - **`tests/`** - Unit and integration tests
 - **`assets/`** - UI resources, icons, sample files
 - **`scripts/`** - Build, setup, and utility scripts

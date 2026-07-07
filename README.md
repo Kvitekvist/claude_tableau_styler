@@ -35,10 +35,16 @@ cd Tableau_Styler
 
 # Run setup script
 .\scripts\setup.bat
-
-# Run the application
-.\scripts\run.bat
 ```
+
+### Usage
+
+1. **Add Tableau files** - Copy your .twb or .twbx files to `tableau/input/`
+2. **Run the application** - Execute `.\scripts\run.bat`
+3. **Select styling** - Choose your dashboards and apply styles
+4. **Get results** - Find styled files in `tableau/output/`
+
+Original files are automatically backed up to `tableau/backups/` before any modifications.
 
 ---
 
@@ -71,6 +77,11 @@ Tableau_Styler/
 │   ├── ui/              # User interface
 │   ├── config/          # Configuration management
 │   └── utils/           # Helper utilities
+├── tableau/             # Tableau workbook files
+│   ├── input/           # Place your .twb/.twbx files here
+│   ├── output/          # Styled files output here
+│   ├── backups/         # Automatic backups
+│   └── templates/       # Reusable style configs
 ├── tests/               # Unit and integration tests
 ├── assets/              # UI resources and sample files
 ├── scripts/             # Build and utility scripts

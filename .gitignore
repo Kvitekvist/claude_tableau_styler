@@ -34,5 +34,13 @@ obj/
 .env
 .env.local
 
+# Tableau workbook files (keep templates only)
+/tableau/input/*
+!/tableau/input/.gitkeep
+/tableau/output/*
+!/tableau/output/.gitkeep
+/tableau/backups/*
+!/tableau/backups/.gitkeep
+
 # Claude Code runtime state
 .claude/scheduled_tasks.lock
